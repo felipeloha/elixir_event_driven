@@ -9,3 +9,11 @@ services:
       - EDGE_PORT=4566
     ports:
       - '4566-4597:4566-4597'
+
+  setup:
+    image: amazon/aws-cli
+    volumes:
+      - "./setup_sqs_sns.sh:/setup_sqs_sns.sh"
+    entrypoint: sh -c "/setup_sqs_sns.sh"
+    depends_on:
+      - localstack
