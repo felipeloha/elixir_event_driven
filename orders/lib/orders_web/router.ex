@@ -1,29 +1,36 @@
 defmodule OrdersWeb.Router do
+  #alias OrdersWeb.OrderController
   use OrdersWeb, :router
 
   pipeline :browser do
-    plug :accepts, ["html"]
-    plug :fetch_session
-    plug :fetch_live_flash
-    plug :put_root_layout, {OrdersWeb.Layouts, :root}
-    plug :protect_from_forgery
-    plug :put_secure_browser_headers
+    plug(:accepts, ["html"])
+    plug(:fetch_session)
+    plug(:fetch_live_flash)
+    plug(:put_root_layout, {OrdersWeb.Layouts, :root})
+    plug(:protect_from_forgery)
+    plug(:put_secure_browser_headers)
   end
 
   pipeline :api do
-    plug :accepts, ["json"]
+    plug(:accepts, ["json"])
   end
 
   scope "/", OrdersWeb do
-    pipe_through :browser
+    pipe_through(:browser)
 
-    get "/", PageController, :home
+    get("/", PageController, :home)
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", OrdersWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", OrdersWeb do
+    pipe_through(:api)
+
+    post("/orders", OrderController, :create)
+    get("/orders", OrderController, :index)
+    get("/orders/:id", OrderController, :show)
+    put("/orders/:id", OrderController, :update)
+    delete("/orders/:id", OrderController, :delete)
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:orders, :dev_routes) do
@@ -35,10 +42,10 @@ defmodule OrdersWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/dev" do
-      pipe_through :browser
+      pipe_through(:browser)
 
-      live_dashboard "/dashboard", metrics: OrdersWeb.Telemetry
-      forward "/mailbox", Plug.Swoosh.MailboxPreview
+      live_dashboard("/dashboard", metrics: OrdersWeb.Telemetry)
+      forward("/mailbox", Plug.Swoosh.MailboxPreview)
     end
   end
 end
