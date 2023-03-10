@@ -4,4 +4,4 @@ aws sns publish --endpoint-url=http://localhost:4566 --topic-arn arn:aws:sns:eu-
 
 sleep 1
 echo "receive message"
-aws --endpoint-url=http://localhost:4566 sqs receive-message --queue-url http://localhost:4566/000000000000/dummy-queue --profile test-profile --region eu-central-1 --output json | cat
+aws --endpoint-url=http://localhost:4566 sqs receive-message --queue-url http://localhost:4566/000000000000/restaurant-queue --profile test-profile --region eu-central-1 --output json | cat
