@@ -6,12 +6,11 @@ defmodule OrdersWeb.OrderControllerTest do
   alias Orders.Deliveries.Order
 
   @create_attrs %{
-    name: "some name",
-    status: "some status"
+    name: "some name"
   }
   @update_attrs %{
     name: "some updated name",
-    status: "some updated status"
+    status: "confirmed"
   }
   @invalid_attrs %{name: nil, status: nil}
 
