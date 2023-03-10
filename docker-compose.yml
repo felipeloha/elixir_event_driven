@@ -1,0 +1,45 @@
+version: '3.0'
+
+services:
+  orders_db:
+    image: postgres:13.4
+    environment:
+      POSTGRES_DB: orders
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: [ "CMD", "gosu", "postgres", "pg_ctl" ,"status" ]
+      timeout: 60s
+      retries: 10
+
+  restaurants_db:
+    image: postgres:13.4
+    environment:
+      POSTGRES_DB: restaurants
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: [ "CMD", "gosu", "postgres", "pg_ctl" ,"status" ]
+      timeout: 60s
+      retries: 10
+
+  localstack:
+    image: localstack/localstack:latest
+    environment:
+      - SERVICES=sqs,sns
+      - AWS_DEFAULT_REGION=eu-central-1
+      - EDGE_PORT=4566
+    ports:
+      - '4566-4597:4566-4597'
+
+  setup:
+    image: amazon/aws-cli
+    volumes:
+      - "./setup_sqs_sns.sh:/setup_sqs_sns.sh"
+    entrypoint: sh -c "/setup_sqs_sns.sh"
+    depends_on:
+      - localstack
