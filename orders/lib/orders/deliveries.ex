@@ -55,18 +55,12 @@ defmodule Orders.Deliveries do
     |> Repo.insert()
   end
 
-  @doc """
-  Updates a order.
+  def update_order!(%Order{} = order, attrs) do
+    order
+    |> Order.changeset(attrs)
+    |> Repo.update!()
+  end
 
-  ## Examples
-
-      iex> update_order(order, %{field: new_value})
-      {:ok, %Order{}}
-
-      iex> update_order(order, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def update_order(%Order{} = order, attrs) do
     order
     |> Order.changeset(attrs)

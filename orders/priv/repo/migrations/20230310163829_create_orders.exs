@@ -3,7 +3,7 @@ defmodule Orders.Repo.Migrations.CreateOrders do
 
   def change do
     create table(:orders) do
-      add :name, :string
+      add :name, :string, default: "requested"
       add :status, :string
 
       timestamps()

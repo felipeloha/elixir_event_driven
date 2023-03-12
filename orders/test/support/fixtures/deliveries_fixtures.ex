@@ -11,8 +11,7 @@ defmodule Orders.DeliveriesFixtures do
     {:ok, order} =
       attrs
       |> Enum.into(%{
-        name: "some name",
-        status: "some status"
+        name: "some name"
       })
       |> Orders.Deliveries.create_order()
 
