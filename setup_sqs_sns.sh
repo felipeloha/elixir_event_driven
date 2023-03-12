@@ -6,6 +6,8 @@ aws configure set output "table" --profile test-profile
 
 echo "setting up sqs sns and subscription"
 HOST=localstack
+#HOST=localhost
+
 #create topic, queue and subscription
 aws --endpoint-url=http://$HOST:4566 sns create-topic --name order-creation-events --region eu-central-1 --profile test-profile --output table | cat
 aws --endpoint-url=http://$HOST:4566 sqs create-queue --queue-name restaurant-queue --profile test-profile --region eu-central-1 --output table | cat
