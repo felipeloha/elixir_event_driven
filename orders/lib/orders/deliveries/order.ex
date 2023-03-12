@@ -5,7 +5,7 @@ defmodule Orders.Deliveries.Order do
   schema "orders" do
     # requested, rejected, confirmed
     field(:name, :string)
-    field(:status, :string)
+    field(:status, :string, default: "requested")
 
     timestamps()
   end
@@ -15,16 +15,17 @@ defmodule Orders.Deliveries.Order do
     order
     |> cast(attrs, [:name, :status])
     |> validate_required([:name])
-    |> IO.inspect()
     |> validate_status()
   end
 
-  defp validate_status(%{data: %{status: current}, changes: %{status: status}}),
-    do: validate_status(current, status)
+  defp validate_status(%{data: %{status: current}, changes: %{status: status}} = changeset),
+    do: validate_status(changeset, current, status)
 
-  defp validate_status(cs), do: cs
+  defp validate_status(changeset), do: changeset
 
-  defp validate_status("requested", "rejected"), do: true
-  defp validate_status("requested", "confirmed"), do: true
-  defp validate_status(_, _), do: false
+  defp validate_status(changeset, "requested", "rejected"), do: changeset
+  defp validate_status(changeset, "requested", "confirmed"), do: changeset
+
+  defp validate_status(changeset, _, _),
+    do: add_error(changeset, :status, "invalid_status_transition")
 end

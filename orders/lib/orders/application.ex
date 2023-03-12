@@ -17,7 +17,8 @@ defmodule Orders.Application do
       # Start Finch
       {Finch, name: Orders.Finch},
       # Start the Endpoint (http/https)
-      OrdersWeb.Endpoint
+      OrdersWeb.Endpoint,
+      Orders.SQS.RestaurantConsumer
       # Start a worker by calling: Orders.Worker.start_link(arg)
       # {Orders.Worker, arg}
     ]

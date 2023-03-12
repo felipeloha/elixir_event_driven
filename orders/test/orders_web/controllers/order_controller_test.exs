@@ -35,7 +35,7 @@ defmodule OrdersWeb.OrderControllerTest do
       assert %{
                "id" => ^id,
                "name" => "some name",
-               "status" => "some status"
+               "status" => "requested"
              } = json_response(conn, 200)["data"]
     end
 
@@ -57,7 +57,7 @@ defmodule OrdersWeb.OrderControllerTest do
       assert %{
                "id" => ^id,
                "name" => "some updated name",
-               "status" => "some updated status"
+               "status" => "confirmed"
              } = json_response(conn, 200)["data"]
     end
 
