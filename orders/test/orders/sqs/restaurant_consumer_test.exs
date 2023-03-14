@@ -40,7 +40,10 @@ defmodule Orders.SQS.RestaurantConsumerTest do
         |> Jason.encode!()
 
       ref = Broadway.test_message(Orders.SQS.RestaurantConsumer, event)
-      assert_receive {:ack, ^ref, [], _failed}, 1000
+
+      assert_receive {:ack, ^ref, [],
+                      [%{status: {:failed, {:error, "Transition to this state isn't declared."}}}]},
+                     1000
 
       assert %{status: "requested"} = Deliveries.get_order!(order.id)
     end
