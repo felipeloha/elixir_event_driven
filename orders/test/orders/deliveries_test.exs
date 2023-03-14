@@ -21,11 +21,11 @@ defmodule Orders.DeliveriesTest do
     end
 
     test "create_order/1 with valid data creates a order" do
-      valid_attrs = %{name: "some name", status: "some status"}
+      valid_attrs = %{name: "some name", status: "requested"}
 
       assert {:ok, %Order{} = order} = Deliveries.create_order(valid_attrs)
       assert order.name == "some name"
-      assert order.status == "some status"
+      assert order.status == "requested"
     end
 
     test "create_order/1 with invalid data returns error changeset" do
@@ -34,16 +34,20 @@ defmodule Orders.DeliveriesTest do
 
     test "update_order/2 with valid data updates the order" do
       order = order_fixture()
-      update_attrs = %{name: "some updated name", status: "some updated status"}
+      update_attrs = %{name: "some updated name", status: "rejected"}
 
-      assert {:ok, %Order{} = order} = Deliveries.update_order(order, update_attrs)
+      assert %Order{} = order = Deliveries.update_order!(order, update_attrs)
       assert order.name == "some updated name"
-      assert order.status == "some updated status"
+      assert order.status == "rejected"
     end
 
     test "update_order/2 with invalid data returns error changeset" do
       order = order_fixture()
-      assert {:error, %Ecto.Changeset{}} = Deliveries.update_order(order, @invalid_attrs)
+
+      assert_raise(Ecto.InvalidChangesetError, fn ->
+        Deliveries.update_order!(order, @invalid_attrs)
+      end)
+
       assert order == Deliveries.get_order!(order.id)
     end
 
