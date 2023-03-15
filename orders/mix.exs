@@ -36,6 +36,7 @@ defmodule Orders.MixProject do
       {:phoenix_ecto, "~> 4.4"},
       {:broadway_sqs, "~> 0.7"},
       {:hackney, "~> 1.9"},
+      {:machinery, "~> 1.0.0"},
       {:ecto_sql, "~> 3.6"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 3.3"},

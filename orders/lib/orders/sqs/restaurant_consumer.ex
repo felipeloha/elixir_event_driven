@@ -36,11 +36,12 @@ defmodule Orders.SQS.RestaurantConsumer do
         } = message,
         _
       ) do
-    data
-    |> Jason.decode!()
-    |> handle()
-
-    message
+    with decoded_data <- data |> Jason.decode!(),
+         {:ok, _order} <- decoded_data |> handle() do
+      message
+    else
+      error -> Broadway.Message.failed(message, error)
+    end
   end
 
   defp handle(
@@ -53,7 +54,7 @@ defmodule Orders.SQS.RestaurantConsumer do
 
     order_id
     |> Deliveries.get_order!()
-    |> Deliveries.update_order!(%{status: new_order_status})
+    |> Machinery.transition_to(Deliveries.Order.OrderStateMachine, new_order_status)
   end
 
   defp handle(msg) do
