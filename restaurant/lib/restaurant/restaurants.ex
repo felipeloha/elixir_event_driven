@@ -54,10 +54,15 @@ defmodule Restaurant.Restaurants do
     Multi.new()
     |> Multi.insert(:query, RestaurantQuery.changeset(%RestaurantQuery{}, attrs))
     |> Multi.merge(fn %{query: %{id: id}} ->
-      Restaurant.Restaurants.Jobs.enqueue(Multi.new(), :query_status, %{
-        "type" => "query_status",
-        "query_id" => id
-      })
+      Restaurant.Restaurants.Jobs.enqueue(
+        Multi.new(),
+        :query_status,
+        %{
+          "type" => "query_status",
+          "query_id" => id
+        },
+        max_attempts: 3
+      )
     end)
     |> Repo.transaction()
   end

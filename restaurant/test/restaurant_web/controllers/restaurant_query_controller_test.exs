@@ -50,20 +50,21 @@ defmodule RestaurantWeb.RestaurantQueryControllerTest do
                "status" => "requested"
              } = json_response(conn, 200)["data"]
 
-      #run query job
+      # run query job
       send(Jobs.Producer, :poll)
       wait_for_jobs_to_complete("query_status")
       assert %{status: "confirmed"} = Restaurants.get_restaurant_query!(id)
 
-      #run notify job
+      # run notify job
       send(Jobs.Producer, :poll)
       wait_for_jobs_to_complete("notify")
 
       assert [%{body: body}] = receive_sqs_msgs()
       assert %{payload: %{order_id: 42}} = body |> Jason.decode!(keys: :atoms)
+      assert [] == Repo.all(Jobs)
     end
 
-    #TODO job fails and retries
+    # TODO job fails and retries
 
     test "renders errors when data is invalid", %{conn: conn} do
       conn = post(conn, ~p"/api/restaurant/query", restaurant_query: @invalid_attrs)
