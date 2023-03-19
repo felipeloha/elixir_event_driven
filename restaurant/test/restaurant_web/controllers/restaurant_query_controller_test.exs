@@ -131,16 +131,18 @@ defmodule RestaurantWeb.RestaurantQueryControllerTest do
     end
   end
 
-  defp receive_sqs_msgs(queue_name \\ "restaurant-queue") do
-    ExAws.SQS.receive_message("https://localhost:4566/000000000000/#{queue_name}")
+  defp receive_sqs_msgs() do
+    Application.get_env(:restaurant, :restaurant_queue_url)
+    |> ExAws.SQS.receive_message()
     |> ExAws.request()
     |> elem(1)
     |> Map.get(:body)
     |> Map.get(:messages)
   end
 
-  defp purge(queue_name \\ "restaurant-queue") do
-    ExAws.SQS.purge_queue("https://localhost:4566/000000000000/#{queue_name}")
+  defp purge() do
+    Application.get_env(:restaurant, :restaurant_queue_url)
+    |> ExAws.SQS.purge_queue()
     |> ExAws.request()
   end
 end

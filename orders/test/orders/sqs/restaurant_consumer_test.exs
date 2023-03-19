@@ -53,17 +53,17 @@ defmodule Orders.SQS.RestaurantConsumerTest do
     test "non consumed messages should go to dead letter queue" do
       # reset queues
       assert {:ok, _} = purge()
-      assert {:ok, _} = purge("restaurant-queue-dlq")
+      assert {:ok, _} = purge(:restaurant_dl_queue_url)
 
       assert {:ok, _} =
                ExAws.SQS.send_message(
-                 "https://localhost:4566/000000000000/restaurant-queue",
+                 Application.get_env(:orders, :restaurant_queue_url),
                  %{message: "a message"} |> Jason.encode!()
                )
                |> ExAws.request()
 
       # make sure no messages are in dql
-      assert [] = receive_sqs_msgs("restaurant-queue-dlq")
+      assert [] = receive_sqs_msgs(:restaurant_dl_queue_url)
 
       # receive the first time
       assert [%{}] = receive_sqs_msgs()
@@ -79,19 +79,21 @@ defmodule Orders.SQS.RestaurantConsumerTest do
       # 3 time is not there and is going to the dlq
       assert [] = receive_sqs_msgs()
 
-      assert [%{body: "{\"message\":\"a message\"}"}] = receive_sqs_msgs("restaurant-queue-dlq")
+      assert [%{body: "{\"message\":\"a message\"}"}] = receive_sqs_msgs(:restaurant_dl_queue_url)
     end
 
-    defp receive_sqs_msgs(queue_name \\ "restaurant-queue") do
-      ExAws.SQS.receive_message("https://localhost:4566/000000000000/#{queue_name}")
+    defp receive_sqs_msgs(attr \\ :restaurant_queue_url) do
+      Application.get_env(:orders, attr)
+      |> ExAws.SQS.receive_message()
       |> ExAws.request()
       |> elem(1)
       |> Map.get(:body)
       |> Map.get(:messages)
     end
 
-    defp purge(queue_name \\ "restaurant-queue") do
-      ExAws.SQS.purge_queue("https://localhost:4566/000000000000/#{queue_name}")
+    defp purge(attr \\ :restaurant_queue_url) do
+      Application.get_env(:orders, attr)
+      |> ExAws.SQS.purge_queue()
       |> ExAws.request()
     end
   end

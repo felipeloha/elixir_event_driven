@@ -8,6 +8,7 @@
 import Config
 
 config :restaurant,
+  restaurant_queue_url: "http://localhost:4566/000000000000/restaurant-queue",
   ecto_repos: [Restaurant.Repo]
 
 # Configures the endpoint

@@ -35,14 +35,15 @@ defmodule Restaurant.Restaurants.Notify do
       }
       |> Jason.encode!()
 
-    :ok = send_message("https://localhost:4566/000000000000/restaurant-queue", message)
-
+    :ok = send_message(message)
     multi
   end
 
-  defp send_message(queue_url, message_body, opts \\ []) do
-    case ExAws.SQS.send_message(queue_url, message_body, opts)
-         |> ExAws.request() do
+  defp send_message(message_body, opts \\ []) do
+    Application.get_env(:restaurant, :restaurant_queue_url)
+    |> ExAws.SQS.send_message(message_body, opts)
+    |> ExAws.request()
+    |> case do
       {:ok, res} ->
         IO.inspect(res, label: "message sent to sqs")
 
