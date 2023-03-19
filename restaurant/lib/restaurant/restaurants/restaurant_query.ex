@@ -1,6 +1,7 @@
 defmodule Restaurant.Restaurants.RestaurantQuery do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Restaurant.Repo
 
   schema "restaurant_queries" do
     field(:name, :string)
@@ -20,8 +21,6 @@ defmodule Restaurant.Restaurants.RestaurantQuery do
   end
 
   defmodule QueryStateMachine do
-    alias Restaurant.Restaurants
-
     use Machinery,
       field: :status,
       states: ["requested", "confirmed", "rejected"],
@@ -30,7 +29,7 @@ defmodule Restaurant.Restaurants.RestaurantQuery do
       }
 
     def persist(struct, next_state) do
-      {:ok, query} = Restaurants.update_restaurant_query(struct, %{status: next_state})
+      {:ok, query} = change(struct, %{status: next_state}) |> Repo.update()
       query
     end
   end

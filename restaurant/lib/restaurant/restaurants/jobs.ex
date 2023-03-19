@@ -1,20 +1,34 @@
 defmodule Restaurant.Restaurants.Jobs do
   use EctoJob.JobQueue, table_name: "jobs"
+
   import Integer, only: [is_even: 1, is_odd: 1]
 
-  def perform(multi = %Ecto.Multi{}, job = %{"type" => "query_status", "query_id" => id}) do
+  alias Ecto.Multi
+  alias Restaurant.Repo
+  alias Restaurant.Restaurants.RestaurantQuery.QueryStateMachine
+
+  #TODO move all this logic to caller
+  def perform(multi = %Ecto.Multi{}, %{"type" => "query_status", "query_id" => id}) do
+    IO.inspect(id, label: "querying status for query")
+
     id
     |> Restaurant.Restaurants.get_restaurant_query!()
-    |> query_status()
+    |> query_status(multi)
+    |> Repo.transaction()
+    |> IO.inspect(label: "query_status job done")
   end
 
-  def perform(multi = %Ecto.Multi{}, job = %{"type" => "notify", "query_id" => id}) do
+  def perform(multi = %Ecto.Multi{}, %{"type" => "notify", "query_id" => id}) do
+    IO.inspect(id, label: "notifying query")
+
     id
     |> Restaurant.Restaurants.get_restaurant_query!()
-    |> notify()
+    |> notify(multi)
+    |> Repo.transaction()
+    |> IO.inspect(label: "notify job done")
   end
 
-  defp query_status(query) do
+  defp query_status(query, multi) do
     # faking complex logic
     status =
       case query.restaurant_id do
@@ -22,16 +36,19 @@ defmodule Restaurant.Restaurants.Jobs do
         id when is_odd(id) -> "rejected"
       end
 
-    :ok = Restaurant.Restaurants.RestaurantQuery.QueryStateMachine.transition_to(query, status)
+    # downside of the machinery library that it cannot handle multis,
+    # if the notification insert fails we would have an inconsistent state
+    {:ok, _} = Machinery.transition_to(query, QueryStateMachine, status) |> IO.inspect()
 
     # enqueue notification so that its retried on failure
-    :ok =
-      :notify
-      |> __MODULE__.new(%{"type" => "notify", "query_id" => query.id})
-      |> Repo.insert()
+    Multi.insert(
+      multi,
+      :notify,
+      __MODULE__.new(%{"type" => "notify", "query_id" => query.id})
+    )
   end
 
-  defp notify(query) do
+  defp notify(query, multi) do
     message =
       %{
         "id" => "random_id",
@@ -44,13 +61,15 @@ defmodule Restaurant.Restaurants.Jobs do
       |> Jason.encode!()
 
     :ok = send_message("https://localhost:4566/000000000000/restaurant-queue", message)
+
+    multi
   end
 
   defp send_message(queue_url, message_body, opts \\ []) do
     case ExAws.SQS.send_message(queue_url, message_body, opts)
          |> ExAws.request() do
       {:ok, res} ->
-        IO.inspect(res, "message sent to sqs")
+        IO.inspect(res, label: "message sent to sqs")
 
         :ok
 
