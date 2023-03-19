@@ -29,7 +29,7 @@ defmodule Restaurant.RestaurantsTest do
       assert restaurant_query.name == "some name"
       assert restaurant_query.order_id == 42
       assert restaurant_query.restaurant_id == 42
-      assert restaurant_query.status == "some status"
+      assert restaurant_query.status == "confirmed"
     end
 
     test "create_restaurant_query/1 with invalid data returns error changeset" do
@@ -52,7 +52,7 @@ defmodule Restaurant.RestaurantsTest do
       assert restaurant_query.name == "some updated name"
       assert restaurant_query.order_id == 43
       assert restaurant_query.restaurant_id == 43
-      assert restaurant_query.status == "some updated status"
+      assert restaurant_query.status == "rejected"
     end
 
     test "update_restaurant_query/2 with invalid data returns error changeset" do

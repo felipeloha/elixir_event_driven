@@ -50,6 +50,9 @@ defmodule Restaurant.Restaurants do
 
   """
   def create_restaurant_query(attrs \\ %{}) do
+    # use machinery for state management and handle errors
+    # send message to sqs
+    # refute or confirm depending on call
     %RestaurantQuery{}
     |> RestaurantQuery.changeset(attrs)
     |> Repo.insert()

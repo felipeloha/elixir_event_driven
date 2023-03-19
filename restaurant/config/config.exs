@@ -59,6 +59,18 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+config :ex_aws,
+  access_key_id: "dummy",
+  secret_access_key: "dummy",
+  region: "eu-central-1"
+
+# redirect ex aws to localstack
+config :ex_aws, :sqs,
+  scheme: "http://",
+  host: "localhost",
+  port: 4566,
+  region: "eu-central-1"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

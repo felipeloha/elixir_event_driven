@@ -42,7 +42,7 @@ defmodule RestaurantWeb.RestaurantQueryControllerTest do
                "name" => "some name",
                "order_id" => 42,
                "restaurant_id" => 42,
-               "status" => "some status"
+               "status" => "confirmed"
              } = json_response(conn, 200)["data"]
     end
 
@@ -71,7 +71,7 @@ defmodule RestaurantWeb.RestaurantQueryControllerTest do
                "name" => "some updated name",
                "order_id" => 43,
                "restaurant_id" => 43,
-               "status" => "some updated status"
+               "status" => "rejected"
              } = json_response(conn, 200)["data"]
     end
 
