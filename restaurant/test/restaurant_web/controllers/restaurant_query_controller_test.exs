@@ -63,6 +63,8 @@ defmodule RestaurantWeb.RestaurantQueryControllerTest do
       assert %{payload: %{order_id: 42}} = body |> Jason.decode!(keys: :atoms)
     end
 
+    #TODO job fails and retries
+
     test "renders errors when data is invalid", %{conn: conn} do
       conn = post(conn, ~p"/api/restaurant/query", restaurant_query: @invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}

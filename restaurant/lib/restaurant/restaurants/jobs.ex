@@ -7,6 +7,9 @@ defmodule Restaurant.Restaurants.Jobs do
   alias Restaurant.Repo
   alias Restaurant.Restaurants.RestaurantQuery.QueryStateMachine
 
+  #each failure over max attempts should notify the application monitoring
+  #so that the failure is visible
+
   #TODO move all this logic to caller
   def perform(multi = %Ecto.Multi{}, %{"type" => "query_status", "query_id" => id}) do
     IO.inspect(id, label: "querying status for query")
