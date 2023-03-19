@@ -64,8 +64,6 @@ defmodule RestaurantWeb.RestaurantQueryControllerTest do
       assert [] == Repo.all(Jobs)
     end
 
-    # TODO job fails and retries
-
     test "renders errors when data is invalid", %{conn: conn} do
       conn = post(conn, ~p"/api/restaurant/query", restaurant_query: @invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
