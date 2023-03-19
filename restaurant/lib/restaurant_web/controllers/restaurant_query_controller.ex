@@ -4,7 +4,7 @@ defmodule RestaurantWeb.RestaurantQueryController do
   alias Restaurant.Restaurants
   alias Restaurant.Restaurants.RestaurantQuery
 
-  action_fallback RestaurantWeb.FallbackController
+  action_fallback(RestaurantWeb.FallbackController)
 
   def index(conn, _params) do
     restaurant_queries = Restaurants.list_restaurant_queries()
@@ -12,7 +12,7 @@ defmodule RestaurantWeb.RestaurantQueryController do
   end
 
   def create(conn, %{"restaurant_query" => restaurant_query_params}) do
-    with {:ok, %RestaurantQuery{} = restaurant_query} <-
+    with {:ok, %{query: %RestaurantQuery{} = restaurant_query}} <-
            Restaurants.create_restaurant_query(restaurant_query_params) do
       conn
       |> put_status(:created)

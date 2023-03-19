@@ -4,6 +4,7 @@ defmodule Restaurant.Restaurants do
   """
 
   import Ecto.Query, warn: false
+  alias Ecto.Multi
   alias Restaurant.Repo
 
   alias Restaurant.Restaurants.RestaurantQuery
@@ -50,12 +51,12 @@ defmodule Restaurant.Restaurants do
 
   """
   def create_restaurant_query(attrs \\ %{}) do
-    # use machinery for state management and handle errors
-    # send message to sqs
-    # refute or confirm depending on call
-    %RestaurantQuery{}
-    |> RestaurantQuery.changeset(attrs)
-    |> Repo.insert()
+    Multi.new()
+    |> Multi.insert(:query, RestaurantQuery.changeset(%RestaurantQuery{}, attrs))
+    |> Multi.merge(fn %{query: %{id: id}} ->
+      Restaurant.Restaurants.Jobs.enqueue(Multi.new(), :query_status, %{"type" => "query_status"})
+    end)
+    |> Repo.transaction()
   end
 
   @doc """

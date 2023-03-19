@@ -50,7 +50,9 @@ defmodule Restaurant.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:ex_aws, "~> 2.4.1"}
+      {:ex_aws, "~> 2.4.1"},
+      {:ecto_job, "~> 3.1"},
+      {:machinery, "~> 1.0.0"}
     ]
   end
 
