@@ -21,6 +21,10 @@ config :restaurant, RestaurantWeb.Endpoint,
   secret_key_base: "6ygGAuLjJ8MP+l2046LeSp/GyW4tDmR97Fnz+3h7sDx1Zm4v5GWHbH0YvHwiHH37",
   server: false
 
+config :ecto_job,
+  retry_timeout: 400,
+  poll_interval: 300
+
 # In test we don't send emails.
 config :restaurant, Restaurant.Mailer, adapter: Swoosh.Adapters.Test
 

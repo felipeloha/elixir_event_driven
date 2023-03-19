@@ -23,9 +23,9 @@ defmodule Restaurant.Restaurants.RestaurantQuery do
   defmodule QueryStateMachine do
     use Machinery,
       field: :status,
-      states: ["requested", "confirmed", "rejected"],
+      states: ["requested", "available", "unavailable"],
       transitions: %{
-        "requested" => ["confirmed", "rejected"]
+        "requested" => ["available", "unavailable"]
       }
 
     def persist(struct, next_state) do

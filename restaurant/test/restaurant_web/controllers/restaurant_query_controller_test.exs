@@ -53,7 +53,7 @@ defmodule RestaurantWeb.RestaurantQueryControllerTest do
       # run query job
       send(Jobs.Producer, :poll)
       wait_for_jobs_to_complete("query_status")
-      assert %{status: "confirmed"} = Restaurants.get_restaurant_query!(id)
+      assert %{status: "available"} = Restaurants.get_restaurant_query!(id)
 
       # run notify job
       send(Jobs.Producer, :poll)
@@ -62,6 +62,26 @@ defmodule RestaurantWeb.RestaurantQueryControllerTest do
       assert [%{body: body}] = receive_sqs_msgs()
       assert %{payload: %{order_id: 42}} = body |> Jason.decode!(keys: :atoms)
       assert [] == Repo.all(Jobs)
+    end
+
+    test "notification fails and is retried", %{conn: conn} do
+      url = Application.get_env(:restaurant, :restaurant_queue_url)
+      Application.put_env(:restaurant, :restaurant_queue_url, "wrong url")
+      on_exit(fn -> Application.put_env(:restaurant, :restaurant_queue_url, url) end)
+
+      purge()
+      conn = post(conn, ~p"/api/restaurant/query", restaurant_query: @create_attrs)
+      assert %{"id" => id} = json_response(conn, 201)["data"]
+
+      # run query job
+      send(Jobs.Producer, :poll)
+      wait_for_jobs_to_complete("query_status")
+      assert %{status: "available"} = Restaurants.get_restaurant_query!(id)
+
+      # run notify job
+      send(Jobs.Producer, :poll)
+      wait_for_jobs_to_complete("notify", from(j in Jobs, where: j.attempt != 3))
+      assert [%{state: "FAILED"}] = Repo.all(Jobs)
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -119,13 +139,16 @@ defmodule RestaurantWeb.RestaurantQueryControllerTest do
     %{restaurant_query: restaurant_query}
   end
 
-  def wait_for_jobs_to_complete(type) do
-    query = from(j in Jobs, where: fragment("? ->> ? = ?", j.params, "type", ^type))
+  defp query(type), do: from(j in Jobs, where: fragment("? ->> ? = ?", j.params, "type", ^type))
+
+  def wait_for_jobs_to_complete(type, query \\ nil) do
+    query = query || query(type)
 
     if Repo.exists?(query) do
-      Repo.all(Jobs) |> IO.inspect()
+      IO.inspect(query)
+      IO.inspect(Repo.all(query))
       Process.sleep(300)
-      wait_for_jobs_to_complete(type)
+      wait_for_jobs_to_complete(type, query)
     end
   end
 

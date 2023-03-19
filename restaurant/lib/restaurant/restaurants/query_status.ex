@@ -31,8 +31,8 @@ defmodule Restaurant.Restaurants.QueryStatus do
     # faking complex logic
     status =
       case query.restaurant_id do
-        id when is_even(id) -> "confirmed"
-        id when is_odd(id) -> "rejected"
+        id when is_even(id) -> "available"
+        id when is_odd(id) -> "unavailable"
       end
 
     # downside of the machinery library that it cannot handle multis,
