@@ -3,7 +3,7 @@ defmodule Restaurant.RestaurantsFixtures do
   Generate a restaurant_query.
   """
   def restaurant_query_fixture(attrs \\ %{}) do
-    {:ok, restaurant_query} =
+    {:ok, %{query: restaurant_query}} =
       attrs
       |> Enum.into(%{
         name: "some name",

@@ -10,7 +10,7 @@ defmodule Orders.SQS.RestaurantConsumer do
       producer: [
         module:
           {BroadwaySQS.Producer,
-           queue_url: "https://localhost:4566/000000000000/restaurant-queue",
+           queue_url: Application.get_env(:orders, :restaurant_queue_url),
            config: [
              access_key_id: "dummy",
              secret_access_key: "dummy"

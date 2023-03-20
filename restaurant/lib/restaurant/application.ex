@@ -17,7 +17,8 @@ defmodule Restaurant.Application do
       # Start Finch
       {Finch, name: Restaurant.Finch},
       # Start the Endpoint (http/https)
-      RestaurantWeb.Endpoint
+      RestaurantWeb.Endpoint,
+      {Restaurant.Restaurants.Jobs, repo: Restaurant.Repo, max_demand: 100}
       # Start a worker by calling: Restaurant.Worker.start_link(arg)
       # {Restaurant.Worker, arg}
     ]

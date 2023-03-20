@@ -23,17 +23,18 @@ defmodule Restaurant.RestaurantsTest do
     test "create_restaurant_query/1 with valid data creates a restaurant_query" do
       valid_attrs = %{name: "some name", order_id: 42, restaurant_id: 42, status: "some status"}
 
-      assert {:ok, %RestaurantQuery{} = restaurant_query} =
+      assert {:ok, %{query: %RestaurantQuery{} = restaurant_query}} =
                Restaurants.create_restaurant_query(valid_attrs)
 
       assert restaurant_query.name == "some name"
       assert restaurant_query.order_id == 42
       assert restaurant_query.restaurant_id == 42
-      assert restaurant_query.status == "some status"
+      assert restaurant_query.status == "requested"
     end
 
     test "create_restaurant_query/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Restaurants.create_restaurant_query(@invalid_attrs)
+      assert {:error, :query, %Ecto.Changeset{}, _} =
+               Restaurants.create_restaurant_query(@invalid_attrs)
     end
 
     test "update_restaurant_query/2 with valid data updates the restaurant_query" do
@@ -52,7 +53,7 @@ defmodule Restaurant.RestaurantsTest do
       assert restaurant_query.name == "some updated name"
       assert restaurant_query.order_id == 43
       assert restaurant_query.restaurant_id == 43
-      assert restaurant_query.status == "some updated status"
+      assert restaurant_query.status == "requested"
     end
 
     test "update_restaurant_query/2 with invalid data returns error changeset" do

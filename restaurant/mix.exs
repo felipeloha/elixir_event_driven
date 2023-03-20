@@ -49,7 +49,14 @@ defmodule Restaurant.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
-      {:plug_cowboy, "~> 2.5"}
+      {:plug_cowboy, "~> 2.5"},
+      # {:ex_aws, "~> 2.4.1"},
+      {:ex_aws_sqs, "~> 3.3"},
+      {:ecto_job, "~> 3.1"},
+      {:machinery, "~> 1.0.0"},
+      {:saxy, "~> 1.1"},
+      {:poison, "~> 3.0"},
+      {:hackney, "~> 1.9"}
     ]
   end
 
