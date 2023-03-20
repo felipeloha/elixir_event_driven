@@ -40,7 +40,9 @@ defmodule Orders.SQS.RestaurantConsumer do
          {:ok, _order} <- decoded_data |> handle() do
       message
     else
-      error -> Broadway.Message.failed(message, error)
+      error ->
+        IO.inspect(message, label: "error consuming message, failing it")
+        Broadway.Message.failed(message, error) |> IO.inspect()
     end
   end
 

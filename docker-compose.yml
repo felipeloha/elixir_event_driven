@@ -28,7 +28,7 @@ services:
       retries: 10
 
   localstack:
-    image: localstack/localstack:latest
+    image: localstack/localstack:1.4
     environment:
       - SERVICES=sqs,sns
       - AWS_DEFAULT_REGION=eu-central-1
