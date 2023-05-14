@@ -2,10 +2,7 @@ import Config
 
 # Configure your database
 config :orders, Orders.Repo,
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
-  port: 5433,
+  url: "ecto://postgres:postgres@orders_db/orders",
   database: "orders",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,

@@ -1,4 +1,4 @@
-version: '3.0'
+version: '3.4'
 
 services:
   orders_db:
@@ -13,6 +13,8 @@ services:
       test: [ "CMD", "gosu", "postgres", "pg_ctl" ,"status" ]
       timeout: 60s
       retries: 10
+    networks:
+      - my-network
 
   restaurants_db:
     image: postgres:13.4
@@ -26,6 +28,8 @@ services:
       test: [ "CMD", "gosu", "postgres", "pg_ctl" ,"status" ]
       timeout: 60s
       retries: 10
+    networks:
+      - my-network
 
   localstack:
     image: localstack/localstack:1.4
@@ -35,6 +39,8 @@ services:
       - EDGE_PORT=4566
     ports:
       - '4566-4597:4566-4597'
+    networks:
+      - my-network
 
   setup:
     image: amazon/aws-cli
@@ -43,3 +49,19 @@ services:
     entrypoint: sh -c "/setup_sqs_sns.sh"
     depends_on:
       - localstack
+    networks:
+      - my-network
+
+  orders:
+    build: orders/.
+    ports:
+      - "4000:4000"
+    depends_on:
+      - setup
+      - orders_db
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    driver: bridge

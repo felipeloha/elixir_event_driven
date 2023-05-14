@@ -27,9 +27,9 @@ The library EctoJob is used to run async processes.
 
 # Getting started
 start application:
-- docker-compose up
+- docker-compose up --build
 
-run tests
+run tests (not working right now)
 - docker-compose up
 - mix tests
 

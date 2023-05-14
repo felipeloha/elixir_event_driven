@@ -1,0 +1,24 @@
+FROM elixir:1.14-alpine
+
+WORKDIR /app
+
+RUN mix local.hex --force && \
+    mix local.rebar --force
+
+COPY . .
+
+RUN pwd
+
+RUN ls -l
+
+CMD "pwd"
+
+RUN mix deps.get
+
+ENV MIX_ENV=dev
+
+EXPOSE 4000
+
+CMD ["mix", "ecto.reset"]
+CMD ["mix", "phx.server"]
+#CMD ["tail", "-f", "/dev/null"]
